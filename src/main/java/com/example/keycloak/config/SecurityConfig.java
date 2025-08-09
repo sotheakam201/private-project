@@ -58,11 +58,14 @@ public class SecurityConfig {
 
         // 1. diable CSRF
         http.csrf(AbstractHttpConfigurer::disable);
+
+        // 2. tells Spring Security that the app is acting as an OAuth2 Resource Server.
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
-        // 2. Stateless session ( no cookie , only jwt )
+
+        // 3. Stateless session ( no cookie , only jwt )
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // 3. Set Access Rules for URLs
+        // 4. Set Access Rules for URLs
         http.authorizeHttpRequests(auth -> {
             for (EndpointAccess access : accessList) {
                 HttpMethod method = HttpMethod.valueOf(access.getMethod().toUpperCase());
@@ -74,7 +77,7 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
 
-        // 4. Enable JWT token
+        // 5. Enable JWT token ( Map JWT claims to Spring Security roles )
         http.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
         );
