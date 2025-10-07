@@ -8,10 +8,13 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
     public static final String PRODUCT_CACHE = "products";
+    public static final String PRODUCT_LIST_CACHE = "productList";
     private final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
@@ -29,30 +32,39 @@ public class ProductService {
                 savedProduct.getPrice());
     }
 
-    @Cacheable(value = PRODUCT_CACHE, key = "#productId")
-    public ProductDto getProduct(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productId));
-        return new ProductDto(product.getId(), product.getName(),
-                product.getPrice());
+    @Cacheable(value = PRODUCT_LIST_CACHE, key = "'all'")
+    public List<ProductDto> readProduct(){
+        return productRepository.findAll().stream()
+                .map(product -> new ProductDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice())).toList();
     }
 
-    @CachePut(value = PRODUCT_CACHE, key = "#result.id()")
-    public ProductDto updateProduct(ProductDto productDto) {
-        Long productId = productDto.id();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productId));
-
-        product.setName(productDto.name());
-        product.setPrice(productDto.price());
-
-        Product updatedProduct = productRepository.save(product);
-        return new ProductDto(updatedProduct.getId(), updatedProduct.getName(),
-                updatedProduct.getPrice());
-    }
-
-    @CacheEvict(value = PRODUCT_CACHE, key = "#productId")
-    public void deleteProduct(Long productId) {
-        productRepository.deleteById(productId);
-    }
+//    @Cacheable(value = PRODUCT_CACHE, key = "#productId")
+//    public ProductDto getProduct(Long productId) {
+//        Product product = productRepository.findById(productId)
+//                .orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productId));
+//        return new ProductDto(product.getId(), product.getName(),
+//                product.getPrice());
+//    }
+//
+//    @CachePut(value = PRODUCT_CACHE, key = "#result.id()")
+//    public ProductDto updateProduct(ProductDto productDto) {
+//        Long productId = productDto.id();
+//        Product product = productRepository.findById(productId)
+//                .orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productId));
+//
+//        product.setName(productDto.name());
+//        product.setPrice(productDto.price());
+//
+//        Product updatedProduct = productRepository.save(product);
+//        return new ProductDto(updatedProduct.getId(), updatedProduct.getName(),
+//                updatedProduct.getPrice());
+//    }
+//
+//    @CacheEvict(value = PRODUCT_CACHE, key = "#productId")
+//    public void deleteProduct(Long productId) {
+//        productRepository.deleteById(productId);
+//    }
 }

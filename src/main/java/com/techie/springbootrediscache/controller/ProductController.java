@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
@@ -22,21 +24,26 @@ public class ProductController {
         return productService.createProduct(productDto);
     }
 
-    @GetMapping("/{productId}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public ProductDto getProduct(@PathVariable Long productId) {
-        return productService.getProduct(productId);
+    @GetMapping
+    public List<ProductDto> readProduct() {
+        return productService.readProduct();
     }
 
-    @PutMapping
-    @ResponseStatus(value = HttpStatus.OK)
-    public ProductDto updateProduct(@RequestBody @Valid ProductDto productDto) {
-        return productService.updateProduct(productDto);
-    }
-
-    @DeleteMapping("/{productId}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteProduct(@PathVariable Long productId) {
-        productService.deleteProduct(productId);
-    }
+//    @GetMapping("/{productId}")
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public ProductDto getProduct(@PathVariable Long productId) {
+//        return productService.getProduct(productId);
+//    }
+//
+//    @PutMapping
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public ProductDto updateProduct(@RequestBody @Valid ProductDto productDto) {
+//        return productService.updateProduct(productDto);
+//    }
+//
+//    @DeleteMapping("/{productId}")
+//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+//    public void deleteProduct(@PathVariable Long productId) {
+//        productService.deleteProduct(productId);
+//    }
 }
